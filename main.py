@@ -17,7 +17,7 @@ bot_info = data[1][0]
 def main():
 
     # Create a title for the chat interface
-    st.title("Improovy Bot")
+    st.title("Improovy Voicemail Bot")
     st.write("This is a testing website to play around with Mike’s conversational examples. The following script is going to be used for responding to customers who left a voicemail.")
     
     #variables for system prompt
