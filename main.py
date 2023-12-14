@@ -1,5 +1,5 @@
 import streamlit as st
-from functions import ideator
+from functions import ideator, baby_ideator
 import json
 import os
 import sys
@@ -36,6 +36,7 @@ def main():
 
     
     if st.button('Click to Start or Restart'):
+        initial_text = baby_ideator(system_prompt)
         restart_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         with open('database.jsonl', 'r') as db, open('archive.jsonl','a') as arch:
         # add reset 
@@ -44,14 +45,16 @@ def main():
             for line in db:
                 arch.write(line)
 
-        #clear database to only first line
+        #clear database to only first two lines
         with open('database.jsonl', 'w') as f:
         # Override database with initial json files
             messages = [
-                {"role": "system", "content": system_prompt}         
+                {"role": "system", "content": system_prompt},
+                {"role": "assistant", "content": initial_text}         
             ]
             f.write(json.dumps(messages[0])+'\n')
-
+            f.write(json.dumps(messages[1])+'\n')
+        st.write(f"Assistant: {initial_text}")
 
 
 
