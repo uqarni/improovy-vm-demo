@@ -5,13 +5,13 @@ import random
 
 #generate openai response; returns messages with openai response
 
-def baby_ideator(system_prompt):
+def initial_message_generator(imes_system_prompt):
   key = os.environ.get("OPENAI_API_KEY")
   openai.api_key = key
 
-  messages = [{"role": "system", "content": system_prompt}]
+  messages = [{"role": "system", "content": imes_system_prompt}]
   result = openai.ChatCompletion.create(
-    model="gpt-4",
+    model="gpt-4-1106-preview",
     messages= messages,
     temperature = 0
   )
@@ -24,7 +24,7 @@ def ideator(messages):
   openai.api_key = key
 
   result = openai.ChatCompletion.create(
-    model="gpt-4",
+    model="gpt-4-1106-preview",
     messages= messages,
     temperature = 0
   )

@@ -1,10 +1,11 @@
 import streamlit as st
-from functions import ideator, baby_ideator
+from functions import ideator, initial_message_generator
 import json
 import os
 import sys
 from datetime import datetime
 from supabase import create_client, Client
+import re
 
 #connect to supabase database
 urL: str = os.environ.get("SUPABASE_URL")
@@ -12,7 +13,9 @@ key: str = os.environ.get("SUPABASE_KEY")
 
 supabase: Client = create_client(urL, key)
 data, count = supabase.table("bots_dev").select("*").eq("id", "mike_voicemail").execute()
+imes_data, imes_count = supabase.table("bots_dev").select("*").eq("id", "mike_voicemail_summarizer").execute()
 bot_info = data[1][0]
+imes_bot_info = imes_data[1][0]
 
 def main():
 
@@ -32,11 +35,18 @@ def main():
     meeting_time='N/A'
 
     system_prompt = bot_info['system_prompt']
-    system_prompt = system_prompt.format(name = name, booking_link = booking_link, resched_link = resched_link, meeting_booked = meeting_booked, meeting_time = meeting_time, voicemail = voicemail)
 
+    imes_system_prompt = imes_bot_info['system_prompt']
+    imes_system_prompt = imes_system_prompt.format(voicemail = voicemail, name=name)
     
     if st.button('Click to Start or Restart'):
-        initial_text = baby_ideator(system_prompt)
+        initial_text = initial_message_generator(imes_system_prompt)
+
+        project_description_pattern = r"voicemail about (.+?)\. Can"
+        initial_text_list = [initial_text]
+        project_description = [re.search(project_description_pattern, initial_text).group(1) for i in initial_text_list]
+        print(project_description)
+        system_prompt = system_prompt.format(name = name, booking_link = booking_link, resched_link = resched_link, meeting_booked = meeting_booked, meeting_time = meeting_time, voicemail = voicemail, project_description = project_description[0])
         restart_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         with open('database.jsonl', 'r') as db, open('archive.jsonl','a') as arch:
         # add reset 
